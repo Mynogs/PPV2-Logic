@@ -1,0 +1,64 @@
+-- V1.0a AR
+-- 21.06.2017 17:50:25 AR V1.0b
+
+generic = {
+  parameter = {
+  },
+
+  init = function(self)
+    block.setInputsPinCount(2)
+    block.setInputPinName(1, 's')
+    block.setInputPinName(2, 'r')
+    block.setInputPinTypeRestrains(1, 'boolean')
+    block.setInputPinTypeRestrains(2, 'boolean')
+    block.setOutputsPinCount(2)
+    block.setOutputPinName(1, 'q')
+    block.setOutputPinName(2, 'nq')
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.setOutputPinTypeRestrains(2, 'boolean')
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', 'RS Flip-Flop', 'RS Flip-Flop')
+    gui.setSize()
+  end,
+
+  apply = function(self)
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0, "'RS'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.start = function()
+          block.q = false
+        end
+
+        block.step = function(s, r)
+          if s then
+            block.q = true
+          elseif r then
+            block.q = false
+          end
+          return block.q, not block.q
+        end
+
+        block.stop = function()
+        end
+
+        return block
+      ]==]
+    return source
+  end,
+
+}
+

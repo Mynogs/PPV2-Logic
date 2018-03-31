@@ -1,0 +1,51 @@
+-- 14.01.2018 10:46:12 AR V1.0a
+
+generic = {
+  name = 'Detect Rise Nonnegative',
+  parameter = {
+  },
+
+  init = function(self)
+    block.setInputsPinCount(1)
+    block.setOutputsPinCount(1)
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.modifyFlags('SupressStartFunctionCall', true)
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', self.name, 'Detect falling edge when signal value decreases to nonpositive value,\nand its previous value was strictly positive')
+    gui.setSize()
+  end,
+
+  apply = function(self)
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0x50, "'a \\xE2\\x86\\x91 -'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.step = function(a)
+          if block.a == nil then
+            block.a = a
+          end
+          local q = a >= 0 and block.a < 0
+          block.a = a
+          return q
+        end
+
+        return block
+      ]==]
+    return source
+  end,
+
+}
+

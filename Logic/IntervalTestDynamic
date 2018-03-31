@@ -1,0 +1,57 @@
+-- 14.01.2018 10:11:26 AR V1.0a
+
+generic = {
+  name = 'Interval Test',
+  parameter = {
+    min = 0,
+    max = 1
+  },
+
+  init = function(self)
+    block.setInputsPinCount(3)
+    block.setInputPinName(1, 'up')
+    block.setInputPinName(2, 'a')
+    block.setInputPinName(3, 'lo')
+    block.setOutputsPinCount(1)
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.modifyFlags('SupressStartFunctionCall', true)
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', self.name, 'Determine if signal is in specified interval')
+    gui.setSize()
+  end,
+
+  apply = function(self)
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0x00, "", [[
+      draw.setColorA(0.7, 0.7, 0.7)
+      draw.line(px(30), py(60), px(70), py(60))
+      draw.line(px(45), py(20), px(45), py(80))
+      draw.setColorA(0, 0, 0)
+      draw.line(px(30), py(55), px(40), py(55), px(40), py(30), px(60), py(30), px(60), py(55), px(70), py(55))
+    ]])
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.step = function(up, a, lo)
+          return a >= lo and a <= up
+        end
+
+        return block
+      ]==]
+    return source
+  end,
+
+}
+

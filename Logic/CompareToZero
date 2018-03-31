@@ -1,0 +1,52 @@
+-- 14.01.2018 10:11:26 AR V1.0a
+
+generic = {
+  name = 'Compare To Zero',
+  parameter = {
+    operator = '=='
+  },
+
+  init = function(self)
+    block.setInputsPinCount(1)
+    block.setOutputsPinCount(1)
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.modifyFlags('SupressStartFunctionCall', true)
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', self.name, 'Determine how signal compares to zero')
+    gui.add('ComboBox', 'ComboBoxOperator', 'Operator', '==\n~=\n<\n<=\n>\n>=', {Width = 60})
+    gui.set('ComboBoxOperator', 'Selected', self.parameter.operator)
+    gui.setSize()
+  end,
+
+  apply = function(self)
+    self.parameter.operator = gui.get('ComboBoxOperator', 'Selected')
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0x50, "'" .. self.parameter.operator .. " 0'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.step = function(a)
+          return STEP
+        end
+
+        return block
+      ]==]
+    local replaces = {}
+    replaces['STEP'] = 'a ' .. self.parameter.operator .. ' 0'
+    return string.gsub(source, '%a+', replaces)
+  end,
+
+}
+

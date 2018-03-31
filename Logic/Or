@@ -1,0 +1,62 @@
+-- V1.0a AR
+-- 21.06.2017 17:50:25 AR V1.0b
+-- 18.08.2017 17:16:27 AR V1.0c
+
+generic = {
+  parameter = {
+    inputs = 2
+  },
+
+  init = function(self)
+    block.setInputsPinCount(self.parameter.inputs)
+    for i = 1, self.parameter.inputs do
+      block.setInputPinTypeRestrains(i, 'boolean')
+    end
+    block.setOutputsPinCount(1)
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.modifyFlags('SupressStartFunctionCall', true)
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', 'OR', 'Locical OR')
+    gui.add('Edit', 'EditNumberOfInputs', 'Number of inputs')
+    gui.set('EditNumberOfInputs', 'Integer', self.parameter.inputs)
+    gui.setSize()
+  end,
+
+  apply = function(self)
+    self.parameter.inputs = gui.get('EditNumberOfInputs', 'Integer')
+    block.setInputsPinCount(self.parameter.inputs)
+    for i = 1, self.parameter.inputs do
+      block.setInputPinTypeRestrains(i, 'boolean')
+    end
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0x55, "'\\xE2\\x89\\xA51'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        return {
+
+          step = function(A)
+            return Q
+          end
+
+        }
+      ]==]
+    local replaces = {
+      ['A'] = table.concat(block.getInputsPinNames(), ', '),
+      ['Q'] = table.concat(block.getInputsPinNames(), ' or '),
+    }
+    return string.gsub(source, '%a+', replaces)
+  end,
+
+}
+

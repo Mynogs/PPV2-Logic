@@ -1,0 +1,91 @@
+-- 07.01.2018 08:59:09 AR V1.0a
+
+generic = {
+  parameter = {
+    length = 4
+  },
+
+  init = function(self)
+    block.setInputsPinCount(2)
+    block.setInputPinName(1, 'c')
+    block.setInputPinName(2, 'd')
+    block.setInputPinTypeRestrains(1, 'boolean')
+    block.setInputPinTypeRestrains(2, 'boolean')
+    block.setOutputsPinCount(self.parameter.length + 1)
+    block.setOutputPinName(1, 'zero')
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    for i = 1, self.parameter.length do
+      block.setOutputPinName(i + 1, 'q' .. i)
+      block.setOutputPinTypeRestrains(i + 1, 'boolean')
+    end
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', 'Shift register', 'Variable length shift register')
+    local s = ''
+    for i = 2, 64 do
+      s = s .. i .. '\n'
+    end
+    gui.add('ComboBox', 'ComboBoxLength', 'Length of the register', s, {Width = 60})
+    gui.setEventHandler(
+      self,
+      'ComboBoxLength',
+      {
+        Click = function(self)
+          self.parameter.length = gui.get('ComboBoxLength') + 2
+          block.setOutputsPinCount(self.parameter.length + 1)
+          for i = 1, self.parameter.length do
+            block.setOutputPinName(i + 1, 'q' .. i)
+            block.setOutputPinTypeRestrains(i + 1, 'boolean')
+          end
+        end
+      }
+    )
+    gui.set('ComboBoxLength', self.parameter.length - 2)
+    gui.setSize()
+  end,
+
+  apply = function(self)
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0, "'SHR'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.start = function()
+          block.r = 0
+
+        end
+
+        block.step = function(c, d)
+          if not block.c and c then
+            block.r = (block.r << 1) | (d and 1 or 0)
+          end
+          block.c = c
+          local q = {}
+          for i = 1, LENGTH do
+            q[i] = (block.r & (1 << (i - 1))) ~= 0
+          end
+          return (block.r & MASK) == 0, table.unpack(q)
+        end
+
+        return block
+      ]==]
+    local replaces = {
+      ['LENGTH'] = self.parameter.length,
+      ['MASK'] = (1 << self.parameter.length) - 1
+    }
+    return string.gsub(source, '%a+', replaces)
+  end,
+
+}
+

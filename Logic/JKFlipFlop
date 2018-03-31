@@ -1,0 +1,76 @@
+-- 30.09.2017 11:28:46 AR V1.0a Default für J and K
+-- 14.01.2018 10:06:31 AR V1.0b Delete stop function
+
+generic = {
+  parameter = {
+  },
+
+  init = function(self)
+    block.setInputsPinCount(3)
+    block.setInputPinName(1, 'j')
+    block.setInputPinName(2, 'c')
+    block.setInputPinName(3, 'k')
+    block.setInputPinTypeRestrains(1, 'boolean')
+    block.setInputPinTypeRestrains(2, 'boolean')
+    block.setInputPinTypeRestrains(3, 'boolean')
+    block.setInputPinDefault(1, true)
+    block.setInputPinDefault(3, true)
+    block.setOutputsPinCount(2)
+    block.setOutputPinName(1, 'q')
+    block.setOutputPinName(2, 'nq')
+    block.setOutputPinTypeRestrains(1, 'boolean')
+    block.setOutputPinTypeRestrains(2, 'boolean')
+    block.modifyFlags('SupressStopFunctionCall', true)
+  end,
+
+  open = function(self)
+    gui.add('Info', 'Info', 'JK Flip-Flop', 'JK Flip-Flop')
+    gui.setSize()
+  end,
+
+  apply = function(self)
+  end,
+
+  close = function()
+  end,
+
+  avatar = function(self)
+    return block.getDefaultAvatar(0, "'JK'")
+  end,
+
+  generate = function(self)
+    local source =
+      [==[
+        local block = {}
+
+        block.start = function()
+          block.pq = false
+          block.q = false
+          block.c = false
+        end
+
+        block.step = function(j, c, k)
+          if c ~= block.c then
+            if c then
+              if j and k then
+                block.pq = not block.pq
+              elseif j and not k then
+                block.pq = true
+              elseif not j and k then
+                block.pq = false
+              end
+            else
+             block.q = block.pq
+            end
+          end
+          block.c = c
+          return block.q, not block.q
+        end
+
+        return block
+      ]==]
+    return source
+  end,
+
+}
+
